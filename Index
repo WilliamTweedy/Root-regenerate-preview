@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root & Regenerate | Product Blueprint Tour</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Deep Loam & New Shoot 
+         Backgrounds: Warm Neutrals (Stone-50)
+         Primary: Stone-800 (Deep Loam)
+         Accents: Green-600 (New Shoot), Orange-700 (Terracotta)
+         Text: Slate-700
+    -->
+
+    <!-- Application Structure Plan: 
+         1. Hero Section: "Morning Dew" Dashboard Simulation.
+         2. Brand Philosophy: Tone setter.
+         3. Feature Lab: Interactive functional demos.
+         4. Knowledge Hub (NEW): Plant Library & Article Feed showcase.
+         5. Community & Chat (UPDATED): Profile showcase + Live Chat simulation with badges.
+         6. Monetization: Pricing tiers.
+         7. Roadmap: Development phases.
+    -->
+
+    <!-- Visualization & Content Choices:
+         1. Knowledge Hub -> Goal: Show value of content -> Method: Interactive Grid/List -> Interaction: Hover to see plant details/article tags.
+         2. Chat Simulation -> Goal: Show community dynamics -> Method: Styled Message List -> Interaction: Scrollable chat area.
+    -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafaf9; /* stone-50 */
+            color: #334155; /* slate-700 */
+        }
+        h1, h2, h3, h4, .serif {
+            font-family: 'Merriweather', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .loam-bg { background-color: #292524; } /* stone-800 */
+        .shoot-text { color: #65a30d; } /* green-600 */
+        .shoot-bg { background-color: #dcfce7; } /* green-100 */
+        
+        /* Custom Scrollbar for list views */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #d6d3d1;
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        @keyframes grow {
+            0% { transform: scaleY(0); opacity: 0; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+        .grow-anim {
+            transform-origin: bottom;
+            animation: grow 0.6s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .msg-anim {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        
+        /* Interactive Card Hover */
+        .feature-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            border-left-color: #65a30d;
+            background-color: #fff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Tab Active State */
+        .tab-btn.active {
+            border-bottom: 2px solid #65a30d;
+            color: #1c1917;
+            font-weight: 600;
+        }
+
+        /* Plant Card Hover Effect */
+        .plant-card:hover .plant-details {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 loam-bg text-stone-100 shadow-lg border-b-4 border-green-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl pt-1">🌱</span>
+                    <span class="text-xl font-bold serif tracking-wide">Root & Regenerate</span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="#dashboard" class="hover:text-green-400 transition">Morning Dew</a>
+                    <a href="#features" class="hover:text-green-400 transition">Feature Lab</a>
+                    <a href="#knowledge" class="hover:text-green-400 transition">Knowledge Hub</a>
+                    <a href="#community" class="hover:text-green-400 transition">Community</a>
+                    <a href="#pricing" class="hover:text-green-400 transition">Pricing</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section: The Morning Dew Dashboard -->
+    <section id="dashboard" class="pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-stone-800 serif mb-4">The "Morning Dew" Experience</h1>
+            <p class="text-lg text-stone-600 max-w-2xl mx-auto">
+                A living companion that adapts to the environment. Use the slider to simulate the time-aware interface.
+            </p>
+        </div>
+
+        <div class="max-w-md mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-200 relative">
+            <div class="bg-stone-100 p-4 flex justify-between items-center text-xs text-stone-500">
+                <span>9:41</span>
+                <span>📶 🔋</span>
+            </div>
+            
+            <div id="dynamic-dashboard" class="p-6 h-96 flex flex-col justify-between transition-colors duration-700 bg-sky-50">
+                <div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <p id="dash-greeting" class="text-stone-500 text-sm font-medium uppercase tracking-wider">Good Morning</p>
+                            <h2 id="dash-title" class="text-3xl serif font-bold text-stone-800 mt-1">Time to sow.</h2>
+                        </div>
+                        <div id="dash-icon" class="text-4xl">🌤️</div>
+                    </div>
+                    
+                    <div id="dash-weather-card" class="bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-stone-100 mb-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-stone-600 font-medium">London, UK</span>
+                            <span class="text-stone-800 font-bold">12°C</span>
+                        </div>
+                        <p id="dash-insight" class="text-sm text-stone-600 mt-2 leading-relaxed">
+                            30% chance of rain. Great time to transplant those leeks before the shower hits.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-stone-800 text-stone-50 p-4 rounded-xl shadow-lg transform transition hover:scale-105 cursor-pointer">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">🥬</span>
+                        <div>
+                            <p class="text-xs text-green-400 font-bold uppercase">Priority Task</p>
+                            <p class="serif font-medium">Harvest Spinach</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto mt-8 bg-stone-100 p-4 rounded-xl border border-stone-200">
+            <label class="block text-sm font-medium text-stone-700 mb-2">Simulate Time of Day</label>
+            <input type="range" id="time-slider" min="0" max="2" step="1" value="0" class="w-full accent-stone-800 cursor-pointer h-2 bg-stone-300 rounded-lg appearance-none">
+            <div class="flex justify-between text-xs text-stone-500 mt-2">
+                <span>Morning</span>
+                <span>Afternoon</span>
+                <span>Evening</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Philosophy -->
+    <section class="bg-stone-800 text-stone-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-2xl serif mb-6">Rooted in Regeneration</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-4 border border-stone-600 rounded-lg bg-stone-800/50">
+                    <h3 class="text-lg serif font-bold text-green-400 mb-1">Patient</h3>
+                    <p class="text-stone-400 text-sm">"Nature takes time." We avoid notification spam.</p>
+                </div>
+                <div class="p-4 border border-stone-600 rounded-lg bg-stone-800/50">
+                    <h3 class="text-lg serif font-bold text-orange-400 mb-1">Encouraging</h3>
+                    <p class="text-stone-400 text-sm">We normalize failure as part of the cycle.</p>
+                </div>
+                <div class="p-4 border border-stone-600 rounded-lg bg-stone-800/50">
+                    <h3 class="text-lg serif font-bold text-blue-300 mb-1">Holistic</h3>
+                    <p class="text-stone-400 text-sm">Focus on soil health and ecosystem balance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Lab -->
+    <section id="features" class="py-16 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl serif font-bold text-stone-800 mb-2">Feature Lab</h2>
+            <p class="text-stone-600">Explore the app's core utilities.</p>
+        </div>
+
+        <div class="flex flex-wrap justify-center border-b border-stone-200 mb-8">
+            <button class="tab-btn active px-6 py-3 text-stone-500 font-medium hover:text-stone-800 transition" onclick="switchTab('gap-filler')">The Gap Filler</button>
+            <button class="tab-btn px-6 py-3 text-stone-500 font-medium hover:text-stone-800 transition" onclick="switchTab('soil-regen')">Soil Regenerator</button>
+            <button class="tab-btn px-6 py-3 text-stone-500 font-medium hover:text-stone-800 transition" onclick="switchTab('plant-doctor')">Plant Doctor</button>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl border border-stone-200 min-h-[450px] p-6 md:p-8 relative overflow-hidden">
+            
+            <!-- GAP FILLER TAB -->
+            <div id="gap-filler" class="feature-content block">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl serif font-bold text-stone-800 mb-4">The Gap Filler</h3>
+                        <p class="text-stone-600 mb-6">Tier 2 users can instantly find crops to fill empty space. The algorithm checks dates against frost data.</p>
+                        <div class="bg-stone-50 p-6 rounded-xl border border-stone-200">
+                            <label class="block text-sm font-medium text-stone-700 mb-2">Current Month</label>
+                            <select id="gf-month" class="block w-full rounded-md border-stone-300 shadow-sm p-2 bg-white border mb-4">
+                                <option value="apr">April (Spring)</option>
+                                <option value="jul">July (Summer)</option>
+                                <option value="oct">October (Autumn)</option>
+                            </select>
+                            <button onclick="runGapFiller()" class="w-full bg-stone-800 text-white py-2 px-4 rounded-lg hover:bg-stone-700 transition font-medium">Find Quick Crops</button>
+                        </div>
+                    </div>
+                    <div class="bg-stone-100 rounded-xl p-6 h-full border border-stone-200">
+                        <div id="gf-results" class="space-y-3">
+                            <div class="text-center text-stone-400 mt-10"><span class="text-4xl block mb-2">🕰️</span>Select a month to see what fits.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOIL REGENERATOR TAB -->
+            <div id="soil-regen" class="feature-content hidden">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-2xl serif font-bold text-stone-800 mb-4">The Soil Regenerator</h3>
+                        <p class="text-stone-600 mb-6">Permaculture diagnostic tool. Answer observations, get a restoration plan.</p>
+                        <div class="bg-stone-50 p-6 rounded-xl border border-stone-200">
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" id="soil-clay" class="form-checkbox h-5 w-5 text-green-600 rounded" onchange="updateSoilChart()"><span class="text-stone-700">Soil is sticky/heavy (Clay)</span></label>
+                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" id="soil-worms" class="form-checkbox h-5 w-5 text-green-600 rounded" onchange="updateSoilChart()"><span class="text-stone-700">No worms visible</span></label>
+                                <label class="flex items-center space-x-3 cursor-pointer"><input type="checkbox" id="soil-drain" class="form-checkbox h-5 w-5 text-green-600 rounded" onchange="updateSoilChart()"><span class="text-stone-700">Water puddles on surface</span></label>
+                            </div>
+                            <div class="mt-6 p-4 bg-orange-50 border border-orange-100 rounded-lg text-sm text-orange-800">
+                                <strong>AI Prediction:</strong> <span id="soil-diagnosis">Balanced Loam (Ideal)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="chart-container"><canvas id="soilChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PLANT DOCTOR TAB -->
+            <div id="plant-doctor" class="feature-content hidden">
+                 <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl serif font-bold text-stone-800 mb-4">The Plant Doctor</h3>
+                        <p class="text-stone-600 mb-6">Instant AI pest/disease diagnosis. High-value feature for Tier 2.</p>
+                        <div class="bg-stone-50 p-6 rounded-xl border border-stone-200 text-center">
+                            <div class="border-2 border-dashed border-stone-300 rounded-lg p-8 mb-4 hover:border-green-500 transition cursor-pointer group" onclick="simulateScan()">
+                                <div class="text-4xl mb-2 group-hover:scale-110 transition duration-300">📸</div>
+                                <p class="text-stone-500 font-medium">Click to Simulate Photo Scan</p>
+                            </div>
+                            <div id="scan-loading" class="hidden mb-4">
+                                <div class="w-full bg-stone-200 rounded-full h-2.5"><div class="bg-green-600 h-2.5 rounded-full" style="width: 45%; animation: pulse 2s infinite"></div></div>
+                                <p class="text-xs text-stone-400 mt-2">Analyzing leaf patterns...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="scan-result" class="bg-white rounded-xl shadow-lg border-l-4 border-red-500 p-6 hidden scale-95 transition-all duration-500">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="text-lg font-bold text-red-700">⚠️ Issue Detected</h4>
+                            <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded">94% Confidence</span>
+                        </div>
+                        <h5 class="text-xl serif font-bold text-stone-800 mb-2">Early Blight</h5>
+                        <div class="space-y-2 text-sm text-stone-700">
+                            <p>✂️ Remove affected leaves immediately.</p>
+                            <p>🧴 Apply baking soda mixture.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: KNOWLEDGE HUB (Articles & Plant Library) -->
+    <section id="knowledge" class="py-16 bg-stone-100 border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl serif font-bold text-stone-800 mb-2">The Knowledge Hub</h2>
+                <p class="text-stone-600">A visual Plant Compendium and high-value Articles provide ongoing value.</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- 1. The Plant Compendium (Pokedex) -->
+                <div>
+                    <h3 class="text-xl font-bold text-stone-800 mb-4 flex items-center">
+                        <span class="bg-green-100 text-green-800 p-2 rounded-lg mr-3">📖</span>
+                        Plant Compendium
+                    </h3>
+                    <p class="text-sm text-stone-500 mb-4">The "Brain" of the app. Beautiful, visual profiles for inspiration.</p>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Card 1 -->
+                        <div class="plant-card bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden relative h-48 cursor-pointer group">
+                            <div class="absolute inset-0 bg-stone-800 opacity-0 group-hover:opacity-10 transition z-10"></div>
+                            <div class="h-28 bg-red-50 flex items-center justify-center text-5xl">🍅</div>
+                            <div class="p-3">
+                                <h4 class="font-bold text-stone-800">Tomato</h4>
+                                <p class="text-xs text-stone-500">Solanum lycopersicum</p>
+                            </div>
+                            <!-- Slide-up Details -->
+                            <div class="plant-details absolute inset-0 bg-stone-800/95 p-4 transform translate-y-full transition-transform duration-300 flex flex-col justify-center text-white z-20">
+                                <h4 class="font-bold mb-2">Vital Stats</h4>
+                                <ul class="text-xs space-y-1 text-stone-300">
+                                    <li>• Harvest: 80 Days</li>
+                                    <li>• Frost: Sensitive ❄️</li>
+                                    <li>• Companion: Basil</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="plant-card bg-white rounded-xl shadow-sm border border-stone-200 overflow-hidden relative h-48 cursor-pointer group">
+                            <div class="absolute inset-0 bg-stone-800 opacity-0 group-hover:opacity-10 transition z-10"></div>
+                            <div class="h-28 bg-purple-50 flex items-center justify-center text-5xl">🧄</div>
+                            <div class="p-3">
+                                <h4 class="font-bold text-stone-800">Garlic</h4>
+                                <p class="text-xs text-stone-500">Allium sativum</p>
+                            </div>
+                            <div class="plant-details absolute inset-0 bg-stone-800/95 p-4 transform translate-y-full transition-transform duration-300 flex flex-col justify-center text-white z-20">
+                                <h4 class="font-bold mb-2">Vital Stats</h4>
+                                <ul class="text-xs space-y-1 text-stone-300">
+                                    <li>• Harvest: 240 Days</li>
+                                    <li>• Frost: Hardy ❄️✅</li>
+                                    <li>• Companion: Roses</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Article Feed (Tiered Content) -->
+                <div>
+                    <h3 class="text-xl font-bold text-stone-800 mb-4 flex items-center">
+                        <span class="bg-orange-100 text-orange-800 p-2 rounded-lg mr-3">📰</span>
+                        Expert Articles
+                    </h3>
+                    <p class="text-sm text-stone-500 mb-4">Delivering value monthly. Tier 2 unlocks deep-dives.</p>
+                    
+                    <div class="space-y-4">
+                        <!-- Free Article -->
+                        <div class="bg-white p-4 rounded-xl border border-stone-200 shadow-sm flex items-start space-x-4 hover:shadow-md transition cursor-pointer">
+                            <div class="w-16 h-16 bg-stone-100 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">📋</div>
+                            <div>
+                                <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full mb-1 inline-block">Free • Tier 1</span>
+                                <h4 class="font-bold text-stone-800">April To-Do List</h4>
+                                <p class="text-xs text-stone-500 mt-1">Key tasks for the vegetable garden this month. Sow beets, carrots, and peas.</p>
+                            </div>
+                        </div>
+
+                        <!-- Premium Article -->
+                        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 shadow-sm flex items-start space-x-4 relative overflow-hidden cursor-pointer group hover:bg-white transition">
+                            <div class="w-16 h-16 bg-stone-800 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 text-white">🕵️‍♂️</div>
+                            <div class="absolute top-2 right-2 text-stone-400">🔒</div>
+                            <div>
+                                <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full mb-1 inline-block">Premium • Tier 2</span>
+                                <h4 class="font-bold text-stone-800 group-hover:text-orange-700 transition">Deep Dive: Soil Microbes</h4>
+                                <p class="text-xs text-stone-500 mt-1">Understanding the fungal network. How to brew compost tea for maximum yield.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UPDATED: Community & Chat Simulation -->
+    <section id="community" class="py-16 max-w-7xl mx-auto px-4">
+        <div class="grid lg:grid-cols-2 gap-12">
+            
+            <!-- Chat Simulation -->
+            <div>
+                <h2 class="text-3xl serif font-bold text-stone-800 mb-6">Live Community Chat</h2>
+                <p class="text-stone-600 mb-6">
+                    See badges in action. Status symbols like "Expert" or "Early Bird" appear next to usernames, building authority and trust.
+                </p>
+
+                <!-- Mock Chat Window -->
+                <div class="bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden h-[400px] flex flex-col">
+                    <div class="bg-stone-800 text-stone-100 p-3 flex justify-between items-center text-sm font-medium">
+                        <span># 🍅 Pests & Diseases</span>
+                        <span class="text-green-400">● 12 Online</span>
+                    </div>
+                    
+                    <!-- Chat Messages Area -->
+                    <div class="flex-1 bg-stone-50 p-4 space-y-4 overflow-y-auto custom-scroll">
+                        
+                        <!-- Msg 1 -->
+                        <div class="flex items-start space-x-3 msg-anim" style="animation-delay: 0.1s;">
+                            <div class="w-8 h-8 rounded-full bg-stone-300 flex items-center justify-center text-xs">👨‍🌾</div>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-bold text-stone-800">New_Grower_99</span>
+                                    <span class="text-[10px] bg-stone-200 text-stone-600 px-1.5 rounded">Seedling</span>
+                                </div>
+                                <div class="bg-white p-2 rounded-lg rounded-tl-none shadow-sm text-xs text-stone-600 border border-stone-200 mt-1">
+                                    Guys, my tomato leaves are turning yellow at the bottom. Help?
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Msg 2 -->
+                        <div class="flex items-start space-x-3 msg-anim" style="animation-delay: 0.8s;">
+                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-xs">👩‍🌾</div>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-bold text-stone-800">Sarah_Veg</span>
+                                    <!-- BADGES -->
+                                    <span class="text-[10px] bg-orange-100 text-orange-800 px-1.5 rounded flex items-center">🌅 Early Bird</span>
+                                    <span class="text-[10px] bg-blue-100 text-blue-800 px-1.5 rounded flex items-center">❄️ Survivor</span>
+                                </div>
+                                <div class="bg-white p-2 rounded-lg rounded-tl-none shadow-sm text-xs text-stone-600 border border-stone-200 mt-1">
+                                    Sounds like Nitrogen deficiency or early blight. Is it spotting?
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Msg 3 (Expert) -->
+                        <div class="flex items-start space-x-3 msg-anim" style="animation-delay: 1.5s;">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-xs">🧙‍♂️</div>
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-bold text-stone-800">Old_Tom</span>
+                                    <span class="text-[10px] bg-purple-600 text-white px-1.5 rounded flex items-center">👑 Expert</span>
+                                </div>
+                                <div class="bg-white p-2 rounded-lg rounded-tl-none shadow-sm text-xs text-stone-600 border border-stone-200 mt-1">
+                                    Upload a photo to the Plant Doctor tool. But generally, remove those lower leaves to stop splash-back.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div class="p-3 bg-white border-t border-stone-200">
+                        <div class="w-full bg-stone-100 rounded-lg h-8 px-3 flex items-center text-xs text-stone-400">
+                            Type a message...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile & Badges Showcase -->
+            <div>
+                <h2 class="text-3xl serif font-bold text-stone-800 mb-6">Profile Showcase</h2>
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-stone-200">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 rounded-full bg-stone-300 mr-4 flex items-center justify-center text-2xl border-2 border-green-500">👩‍🌾</div>
+                        <div>
+                            <h3 class="font-bold text-lg">Sarah_Veg's Profile</h3>
+                            <p class="text-xs text-stone-500">Gardening since 2023 • Zone 8b</p>
+                            <div class="flex mt-1 space-x-1">
+                                <span class="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full">🌅 Early Bird</span>
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">❄️ Survivor</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-xs font-bold uppercase text-stone-400 mb-3">Pinned Achievements</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="h-32 bg-stone-100 rounded-lg flex items-center justify-center flex-col border border-stone-200 text-stone-400 hover:bg-stone-50 transition cursor-pointer">
+                            <span class="text-2xl mb-1">🍅</span>
+                            <span class="text-xs font-medium text-stone-600">Prize Tomato</span>
+                            <span class="text-[10px]">Harvested Aug 2024</span>
+                        </div>
+                        <div class="h-32 bg-stone-100 rounded-lg flex items-center justify-center flex-col border border-stone-200 text-stone-400 hover:bg-stone-50 transition cursor-pointer">
+                            <span class="text-2xl mb-1">🌻</span>
+                            <span class="text-xs font-medium text-stone-600">Giant Sunflower</span>
+                            <span class="text-[10px]">3.2 Meters Tall</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Monetization Strategy -->
+    <section id="pricing" class="py-16 bg-stone-100 border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl serif font-bold text-stone-800 mb-2">Membership Tiers</h2>
+                <p class="text-stone-600">Simple, transparent pricing designed to grow with your garden.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Tier 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-stone-200 relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-stone-400"></div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-800">The Cultivator</h3>
+                            <p class="text-sm text-stone-500">For the enthusiastic hobbyist.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-bold text-stone-800">£5</span>
+                            <span class="text-stone-500 text-sm">/mo</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-stone-600 text-sm"><strong>My Garden Tracker</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-stone-600 text-sm"><strong>Seed Inventory</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-stone-600 text-sm"><strong>Plant Compendium</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-stone-600 text-sm"><strong>Basic Weather Alerts</strong></span></li>
+                    </ul>
+                    <button class="w-full py-3 rounded-lg border-2 border-stone-800 text-stone-800 font-bold hover:bg-stone-50 transition">Select Tier 1</button>
+                </div>
+
+                <!-- Tier 2 -->
+                <div class="bg-stone-800 rounded-2xl p-8 shadow-xl border border-stone-700 transform md:-translate-y-4 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">RECOMMENDED</div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">The Regenerator</h3>
+                            <p class="text-sm text-stone-400">For the serious grower.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-3xl font-bold text-white">£10</span>
+                            <span class="text-stone-400 text-sm">/mo</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start"><span class="text-green-400 mr-2">✦</span><span class="text-stone-300 text-sm"><strong>Everything in Tier 1</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-400 mr-2">✦</span><span class="text-white text-sm"><strong>Plant Doctor (AI)</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-400 mr-2">✦</span><span class="text-white text-sm"><strong>Soil Regenerator</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-400 mr-2">✦</span><span class="text-white text-sm"><strong>Gap Filler Tool</strong></span></li>
+                        <li class="flex items-start"><span class="text-green-400 mr-2">✦</span><span class="text-white text-sm"><strong>Expert Chat Rooms</strong></span></li>
+                    </ul>
+                    <button class="w-full py-3 rounded-lg bg-green-600 text-white font-bold hover:bg-green-500 transition shadow-lg shadow-green-900/50">Upgrade to Tier 2</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-500 py-8 text-center text-sm">
+        <p>© 2025 Root & Regenerate. Digital Companion for the Regenerative Grower.</p>
+    </footer>
+
+    <!-- JS Logic -->
+    <script>
+        // --- 1. Dashboard Logic ---
+        const slider = document.getElementById('time-slider');
+        const dashBg = document.getElementById('dynamic-dashboard');
+        const greeting = document.getElementById('dash-greeting');
+        const title = document.getElementById('dash-title');
+        const icon = document.getElementById('dash-icon');
+        const insight = document.getElementById('dash-insight');
+
+        const states = [
+            { bg: 'bg-sky-50', greet: 'Good Morning', title: 'Time to sow.', icon: '🌤️', insight: '30% chance of rain. Great time to transplant.' },
+            { bg: 'bg-yellow-50', greet: 'Good Afternoon', title: 'Check moisture.', icon: '☀️', insight: 'It\'s 22°C. Greenhouse might need venting.' },
+            { bg: 'bg-indigo-50', greet: 'Good Evening', title: 'Rest & Recover.', icon: '🌙', insight: 'Sun\'s going down. Frost risk tonight.' }
+        ];
+
+        slider.addEventListener('input', (e) => {
+            const state = states[e.target.value];
+            dashBg.classList.remove('bg-sky-50', 'bg-yellow-50', 'bg-indigo-50');
+            dashBg.classList.add(state.bg);
+            greeting.innerText = state.greet;
+            title.innerText = state.title;
+            icon.innerText = state.icon;
+            insight.innerText = state.insight;
+        });
+
+        // --- 2. Tab Switching ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.feature-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('block');
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            if (tabId === 'soil-regen') updateSoilChart();
+        }
+
+        // --- 3. Gap Filler ---
+        function runGapFiller() {
+            const month = document.getElementById('gf-month').value;
+            const container = document.getElementById('gf-results');
+            const crops = {
+                'apr': [{n:'Radish',d:25,i:'🥔'}, {n:'Spinach',d:40,i:'🌿'}, {n:'Lettuce',d:30,i:'🥬'}],
+                'jul': [{n:'Bush Beans',d:50,i:'🫘'}, {n:'Carrots',d:70,i:'🥕'}, {n:'Beetroot',d:55,i:'🟣'}],
+                'oct': [{n:'Garlic',d:240,i:'🧄'}, {n:'Broad Beans',d:180,i:'🌱'}, {n:'Winter Salad',d:60,i:'🥗'}]
+            };
+            let html = `<h5 class="font-bold text-stone-800 mb-4">Recommended for ${month.toUpperCase()}</h5><div class="space-y-3">`;
+            crops[month].forEach(c => {
+                html += `<div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border-l-4 border-green-500 grow-anim"><div class="flex items-center"><span class="text-2xl mr-3">${c.i}</span><div><p class="font-bold text-stone-800">${c.n}</p><p class="text-xs text-stone-500">Harvest in ${c.d} days</p></div></div><button class="text-xs bg-stone-800 text-white px-3 py-1 rounded">Add</button></div>`;
+            });
+            container.innerHTML = html + `</div>`;
+        }
+
+        // --- 4. Soil Chart ---
+        let soilChartInstance = null;
+        function updateSoilChart() {
+            const clay = document.getElementById('soil-clay').checked;
+            const worms = document.getElementById('soil-worms').checked;
+            const drain = document.getElementById('soil-drain').checked;
+            const statusLabel = document.getElementById('soil-diagnosis');
+            let data = [80, 85, 90, 80, 75]; 
+            let diagnosis = "Balanced Loam (Ideal)";
+            let color = 'rgba(101, 163, 13, 0.2)';
+            let borderColor = 'rgba(101, 163, 13, 1)';
+
+            if (clay || drain || worms) {
+                diagnosis = "Degraded / Compacted";
+                color = 'rgba(194, 65, 12, 0.2)';
+                borderColor = 'rgba(194, 65, 12, 1)';
+            }
+            if (clay) { data[3] -= 40; data[1] -= 30; }
+            if (worms) { data[2] -= 60; data[0] -= 20; }
+            if (drain) { data[1] -= 50; }
+
+            statusLabel.innerText = diagnosis;
+            const ctx = document.getElementById('soilChart').getContext('2d');
+            if (soilChartInstance) soilChartInstance.destroy();
+            soilChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Organic Matter', 'Drainage', 'Soil Biology', 'Texture', 'Nutrients'],
+                    datasets: [{ label: 'Soil Health', data: data, fill: true, backgroundColor: color, borderColor: borderColor }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, elements: { line: { borderWidth: 3 } }, scales: { r: { ticks: { display: false }, suggestedMin: 0, suggestedMax: 100 } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        // --- 5. Scan Sim ---
+        function simulateScan() {
+            const loader = document.getElementById('scan-loading');
+            const result = document.getElementById('scan-result');
+            result.classList.add('hidden', 'scale-95');
+            loader.classList.remove('hidden');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                result.classList.remove('hidden');
+                setTimeout(() => result.classList.remove('scale-95'), 50);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
